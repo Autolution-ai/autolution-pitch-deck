@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autolution · Potenzial-Rechner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0D1A;
+    --bg-2: #12121F;
+    --card: #1A1A2E;
+    --card-2: #20203A;
+    --border: #2A2A45;
+    --brand: #6C63FF;
+    --brand-hover: #8B85FF;
+    --brand-soft: rgba(108, 99, 255, 0.12);
+    --text: #F0F0F0;
+    --text-dim: #888CA8;
+    --success: #10B981;
+    --radius: 14px;
+    --shadow: 0 10px 40px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  body {
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(108, 99, 255, 0.18), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(108, 99, 255, 0.08), transparent 60%),
+      var(--bg);
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* Header */
+  header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 48px;
+  }
+  header .logo {
+    height: 72px;
+    width: auto;
+    max-width: 80px;
+    flex-shrink: 0;
+    display: block;
+  }
+  header .brand {
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.01em;
+  }
+
+  .hero {
+    margin-bottom: 40px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #ffffff 0%, #b8b5ff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p {
+    color: var(--text-dim);
+    font-size: 17px;
+    max-width: 680px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+  }
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .card-header .step {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--brand-soft);
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .card-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .card-header .hint {
+    margin-left: auto;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+
+  /* Parameter grid */
+  .param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
+  }
+  .param {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .param label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .param .value-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .param input[type="number"] {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 26px;
+    font-weight: 700;
+    width: 100%;
+    outline: none;
+    font-family: inherit;
+    letter-spacing: -0.02em;
+    padding: 0;
+    -moz-appearance: textfield;
+  }
+  .param input[type="number"]::-webkit-outer-spin-button,
+  .param input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .param input[type="number"]:focus {
+    outline: none;
+  }
+  .param .suffix {
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 16px;
+  }
+
+  /* Slider */
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px; height: 18px;
+    background: var(--brand);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(108,99,255,0.18);
+    transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 18px; height: 18px;
+    background: var(--brand);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 0 4px rgba(108,99,255,0.18);
+  }
+
+  /* Computed mini-stat */
+  .computed {
+    background: var(--brand-soft);
+    border: 1px dashed rgba(108, 99, 255, 0.35);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .computed .label { color: var(--text-dim); font-size: 13px; }
+  .computed .val { color: var(--brand); font-weight: 700; font-size: 18px; }
+
+  /* Leads table */
+  .leads-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .leads-table th {
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .leads-table th:nth-child(n+3) { text-align: right; }
+  .leads-table td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .leads-table td:first-child {
+    font-weight: 600;
+  }
+  .leads-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .leads-table td .factor-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    background: var(--card-2);
+    font-size: 12px;
+    color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .leads-table input {
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 8px 12px;
+    width: 100%;
+    max-width: 140px;
+    outline: none;
+    transition: border-color 0.15s;
+    -moz-appearance: textfield;
+  }
+  .leads-table input::-webkit-outer-spin-button,
+  .leads-table input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .leads-table input:focus {
+    border-color: var(--brand);
+    background: var(--card);
+  }
+  .leads-table tfoot td {
+    font-weight: 700;
+    font-size: 15px;
+    border-top: 2px solid var(--border);
+    border-bottom: none;
+    padding-top: 16px;
+  }
+
+  /* Results */
+  .results-card {
+    background: linear-gradient(135deg, #1A1A2E 0%, #20203A 100%);
+    border: 1px solid var(--brand);
+    position: relative;
+    overflow: hidden;
+  }
+  .results-card::before {
+    content: '';
+    position: absolute;
+    top: -50%; right: -20%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(108,99,255,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 20px;
+    position: relative;
+  }
+  @media (max-width: 860px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .stat {
+    padding: 8px 0;
+  }
+  .stat.hero-stat {
+    padding: 20px 24px;
+    background: var(--brand-soft);
+    border-radius: 12px;
+    border: 1px solid rgba(108,99,255,0.3);
+  }
+  .stat .icon {
+    font-size: 24px;
+    margin-bottom: 10px;
+    display: block;
+  }
+  .stat .label {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+  .stat .num {
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .stat.hero-stat .num {
+    font-size: 42px;
+    color: var(--brand);
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-hover) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* Action bar */
+  .actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  button {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 14px 24px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.15s, background 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  button:active { transform: translateY(1px); }
+  .btn-primary {
+    background: var(--brand);
+    color: white;
+    box-shadow: 0 8px 24px rgba(108,99,255,0.4);
+  }
+  .btn-primary:hover { background: var(--brand-hover); }
+  .btn-secondary {
+    background: var(--card-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--border); }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 13px;
+  }
+  footer .logo-sm {
+    height: 36px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+  }
+  footer a {
+    color: var(--brand);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  footer a:hover { color: var(--brand-hover); text-decoration: underline; }
+
+  /* CTA Booking Card */
+  .cta-card {
+    background: linear-gradient(135deg, var(--brand) 0%, #5148D9 100%);
+    border-radius: var(--radius);
+    padding: 36px;
+    margin-top: 24px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(108,99,255,0.35);
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -10%;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-card h3 {
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    margin-bottom: 10px;
+    letter-spacing: -0.02em;
+    position: relative;
+  }
+  .cta-card p {
+    color: rgba(255,255,255,0.9);
+    font-size: 15px;
+    max-width: 520px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .cta-card .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: var(--brand);
+    font-weight: 700;
+    font-size: 16px;
+    padding: 16px 32px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+    position: relative;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+  .cta-card .cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  }
+
+  /* Fixed-value badge */
+  .param.fixed {
+    background: var(--card-2);
+    opacity: 1;
+    position: relative;
+  }
+  .param.fixed::after {
+    content: 'Festgelegt';
+    position: absolute;
+    top: 12px; right: 12px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+    background: var(--bg);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+  .param.fixed .value-row { margin-bottom: 4px; }
+  .param.fixed .fixed-val {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .param.fixed .fixed-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  /* Print styles */
+  @media print {
+    body {
+      background: #ffffff !important;
+      color: #111 !important;
+    }
+    .container { padding: 20px; max-width: 100%; }
+    .card, .results-card {
+      background: #ffffff !important;
+      border: 1px solid #ddd !important;
+      box-shadow: none !important;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+    .hero h1 {
+      -webkit-text-fill-color: #111 !important;
+      color: #111 !important;
+      background: none !important;
+    }
+    .hero p, .text-dim, .card-header .hint,
+    .param label, .stat .label, .leads-table th {
+      color: #555 !important;
+    }
+    .param, .computed, .stat.hero-stat {
+      background: #f7f7fb !important;
+      border-color: #e0e0ea !important;
+    }
+    .stat .num { color: #111 !important; }
+    .stat.hero-stat .num {
+      color: var(--brand) !important;
+      -webkit-text-fill-color: var(--brand) !important;
+      background: none !important;
+    }
+    .actions, .no-print { display: none !important; }
+    input, .leads-table input {
+      background: transparent !important;
+      border: none !important;
+      color: #111 !important;
+      -webkit-appearance: none;
+    }
+    .leads-table td, .leads-table th { color: #111 !important; }
+    header .brand { color: #111 !important; }
+    footer { color: #666 !important; }
+    .results-card::before { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <img class="logo" id="logoHeader" alt="Autolution Logo">
+    <div class="brand">Autolution</div>
+  </header>
+
+  <section class="hero">
+    <h1>Potenzial-Rechner</h1>
+    <p>Entdecken Sie, wie viel ungenutzter Umsatz in Ihrer Kontaktdatenbank steckt. Passen Sie die Annahmen an Ihr Geschäft an und erhalten Sie in Sekunden eine realistische Potenzial-Schätzung.</p>
+  </section>
+
+  <!-- STEP 1: Parameters -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step">1</div>
+      <h2>Ihre Annahmen</h2>
+      <span class="hint">Passen Sie die Werte an Ihr Unternehmen an</span>
+    </div>
+
+    <div class="param-grid">
+      <div class="param">
+        <label>Ø Umsatz pro Abschluss</label>
+        <div class="value-row">
+          <span class="suffix">€</span>
+          <input type="number" id="dealValue" value="16000" min="0" step="500">
+        </div>
+        <div class="fixed-note">Durchschnittlicher Auftragswert – z.B. einer PV-Anlage.</div>
+      </div>
+
+      <div class="param">
+        <label>Abschlussrate des Vertriebsteams</label>
+        <div class="value-row">
+          <input type="number" id="closeRate" value="30" min="0" max="100" step="1">
+          <span class="suffix">%</span>
+        </div>
+        <input type="range" id="closeRateSlider" min="5" max="80" step="1" value="30">
+        <div class="fixed-note">Abschlussrate bei qualifizierten Leads, die nach dem Termin erscheinen und deren Kontaktdaten (Alter, etc.) passen.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: Leads -->
+  <div class="card">
+    <div class="card-header">
+      <div class="step">2</div>
+      <h2>Ihre Kontakte nach Alter</h2>
+    </div>
+    <p style="color:var(--text-dim); font-size:14px; margin-bottom:20px; margin-top:-10px;">
+      Tragen Sie die <strong style="color:var(--text);">Anzahl der Kontakte ein, die in Ihrem CRM liegen</strong> – aufgeteilt nach Alter. Ältere Leads haben ein geringeres Konvertierungspotenzial, daher wird automatisch ein Faktor angewendet.
+    </p>
+
+    <table class="leads-table">
+      <thead>
+        <tr>
+          <th>Alter</th>
+          <th>Anzahl Kontakte</th>
+          <th>Faktor</th>
+          <th>Erstgespräche</th>
+          <th>Abschlüsse</th>
+          <th>Umsatz</th>
+        </tr>
+      </thead>
+      <tbody id="leadsTable">
+        <!-- Rows generated by JS -->
+      </tbody>
+      <tfoot>
+        <tr>
+          <td>Gesamt</td>
+          <td class="num" id="totalLeads">0</td>
+          <td></td>
+          <td class="num" id="totalAppointments">0</td>
+          <td class="num" id="totalSales">0</td>
+          <td class="num" id="totalRevenue">€ 0</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- STEP 3: Results -->
+  <div class="card results-card">
+    <div class="card-header">
+      <div class="step">3</div>
+      <h2>Ihr Potenzial</h2>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat hero-stat">
+        <span class="icon">💰</span>
+        <div class="label">Potenzieller Gesamtumsatz</div>
+        <div class="num" id="resRevenue">€ 0</div>
+      </div>
+      <div class="stat">
+        <span class="icon">📅</span>
+        <div class="label">Erstgespräche</div>
+        <div class="num" id="resAppointments">0</div>
+      </div>
+      <div class="stat">
+        <span class="icon">✅</span>
+        <div class="label">Erwartete Abschlüsse</div>
+        <div class="num" id="resSales">0</div>
+      </div>
+      <div class="stat">
+        <span class="icon">📊</span>
+        <div class="label">Ø pro Erstgespräch</div>
+        <div class="num" id="resAvg">€ 0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-card">
+    <h3>Lassen Sie uns Ihr Potenzial heben</h3>
+    <p>In einem kostenlosen 30-minütigen Erstgespräch zeigen wir Ihnen, wie Sie genau diesen Umsatz systematisch aus Ihrer Kontaktdatenbank herausholen.</p>
+    <a class="cta-btn" href="https://calendar.app.google/GsKFuUp66C94jkA79" target="_blank" rel="noopener">
+      📅 Erstgespräch buchen
+    </a>
+  </div>
+
+  <div class="actions no-print">
+    <button class="btn-primary" onclick="window.print()">
+      📄 Als PDF speichern
+    </button>
+    <button class="btn-secondary" onclick="resetAll()">
+      ↺ Zurücksetzen
+    </button>
+  </div>
+
+  <footer>
+    <div style="display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+      <img class="logo-sm" id="logoFooter" alt="">
+      <strong style="color:var(--text); font-size:16px;">Autolution</strong>
+    </div>
+    <div style="display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin-bottom:14px; font-size:14px;">
+      <a href="https://autolution.ai" target="_blank" rel="noopener">🌐 autolution.ai</a>
+      <a href="https://autolution.ai/impressum" target="_blank" rel="noopener">Impressum</a>
+      <a href="https://autolution.ai/datenschutz" target="_blank" rel="noopener">Datenschutz</a>
+    </div>
+    <div style="font-size:12px; opacity:0.7;">Berechnung basiert auf konservativen Erfahrungswerten der Solar-Branche.</div>
+  </footer>
+
+</div>
+
+<script>
+  // =====================================================================
+  // Logo (Base64 embedded)
+  // =====================================================================
+  const LOGO_BASE64 = 'data:image/png;base64,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';
+  document.getElementById('logoHeader').src = LOGO_BASE64;
+  document.getElementById('logoFooter').src = LOGO_BASE64;
+
+  // =====================================================================
+  // Configuration: Lead age brackets
+  // =====================================================================
+  const BUCKETS = [
+    { id: 'b1', label: '0 – 6 Monate',   factor: 1.0 },
+    { id: 'b2', label: '6 – 12 Monate',  factor: 0.8 },
+    { id: 'b3', label: '12 – 24 Monate', factor: 0.6 },
+    { id: 'b4', label: '24 – 60 Monate', factor: 0.3 },
+    { id: 'b5', label: '> 60 Monate',    factor: 0.1 },
+  ];
+
+  const DEFAULT_LEADS = { b1: 500, b2: 800, b3: 1200, b4: 1500, b5: 1000 };
+
+  // =====================================================================
+  // Formatters
+  // =====================================================================
+  const fmtEUR = new Intl.NumberFormat('de-DE', {
+    style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 0
+  });
+  const fmtNum = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 1 });
+  const fmtInt = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 0 });
+
+  // =====================================================================
+  // Build leads table
+  // =====================================================================
+  const tbody = document.getElementById('leadsTable');
+  BUCKETS.forEach(b => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${b.label}</td>
+      <td><input type="number" id="leads_${b.id}" min="0" step="1" value="${DEFAULT_LEADS[b.id]}"></td>
+      <td class="num"><span class="factor-pill">× ${b.factor.toFixed(1)}</span></td>
+      <td class="num" id="app_${b.id}">0</td>
+      <td class="num" id="sal_${b.id}">0</td>
+      <td class="num" id="rev_${b.id}">€ 0</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // =====================================================================
+  // Slider ↔ number input sync
+  // =====================================================================
+  function linkSliderAndInput(inputId, sliderId, onChange) {
+    const input = document.getElementById(inputId);
+    const slider = document.getElementById(sliderId);
+    input.addEventListener('input', () => {
+      slider.value = input.value;
+      onChange();
+    });
+    slider.addEventListener('input', () => {
+      input.value = slider.value;
+      onChange();
+    });
+  }
+  linkSliderAndInput('closeRate', 'closeRateSlider', recalculate);
+
+  // Fixed parameter constants
+  const FIXED_BOOKING_RATE = 1;    // appointments per 100 contacts
+  const FIXED_SHOW_RATE    = 0.80; // 80 %
+
+  document.getElementById('dealValue').addEventListener('input', recalculate);
+  BUCKETS.forEach(b => {
+    document.getElementById(`leads_${b.id}`).addEventListener('input', recalculate);
+  });
+
+  // =====================================================================
+  // Core calculation
+  // =====================================================================
+  function recalculate() {
+    const dealValue    = num(document.getElementById('dealValue').value);
+    const bookingRate  = FIXED_BOOKING_RATE;   // fixed: 1 appt / 100 contacts
+    const showRate     = FIXED_SHOW_RATE;      // fixed: 80 %
+    const closeRate    = num(document.getElementById('closeRate').value) / 100;
+
+    let totLeads = 0, totApp = 0, totSal = 0, totRev = 0;
+
+    BUCKETS.forEach(b => {
+      const leads = num(document.getElementById(`leads_${b.id}`).value);
+      const app   = (leads / 100) * bookingRate * b.factor;
+      const sal   = app * showRate * closeRate;
+      const rev   = sal * dealValue;
+
+      document.getElementById(`app_${b.id}`).textContent = fmtNum.format(app);
+      document.getElementById(`sal_${b.id}`).textContent = fmtNum.format(sal);
+      document.getElementById(`rev_${b.id}`).textContent = fmtEUR.format(rev);
+
+      totLeads += leads;
+      totApp   += app;
+      totSal   += sal;
+      totRev   += rev;
+    });
+
+    document.getElementById('totalLeads').textContent        = fmtInt.format(totLeads);
+    document.getElementById('totalAppointments').textContent = fmtNum.format(totApp);
+    document.getElementById('totalSales').textContent        = fmtNum.format(totSal);
+    document.getElementById('totalRevenue').textContent      = fmtEUR.format(totRev);
+
+    // Results card
+    document.getElementById('resRevenue').textContent      = fmtEUR.format(totRev);
+    document.getElementById('resAppointments').textContent = fmtNum.format(totApp);
+    document.getElementById('resSales').textContent        = fmtNum.format(totSal);
+    document.getElementById('resAvg').textContent          =
+      totApp > 0 ? fmtEUR.format(totRev / totApp) : '€ 0';
+  }
+
+  function num(v) {
+    const n = parseFloat(String(v).replace(',', '.'));
+    return isNaN(n) ? 0 : n;
+  }
+
+  // =====================================================================
+  // Reset
+  // =====================================================================
+  function resetAll() {
+    document.getElementById('dealValue').value   = 16000;
+    document.getElementById('closeRate').value   = 30;
+    document.getElementById('closeRateSlider').value = 30;
+    BUCKETS.forEach(b => {
+      document.getElementById(`leads_${b.id}`).value = DEFAULT_LEADS[b.id];
+    });
+    recalculate();
+  }
+
+  // Initial calculation
+  recalculate();
+</script>
+</body>
+</html>
