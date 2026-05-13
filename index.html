@@ -978,6 +978,7 @@ const slides  = Array.from(document.querySelectorAll('.slide'));
 const dotsEl  = document.getElementById('navDots');
 const counter = document.getElementById('slideCounter');
 let cur = 0;
+let exitTimer = null;
 
 // Build dots
 slides.forEach((_, i) => {
@@ -989,12 +990,15 @@ slides.forEach((_, i) => {
 });
 
 function goTo(n) {
-  if (n < 0 || n >= slides.length) return;
+  if (n < 0 || n >= slides.length || n === cur) return;
+  if (exitTimer) { clearTimeout(exitTimer); exitTimer = null; }
   const prev = slides[cur];
+  const next = slides[n];
+  slides.forEach(s => s.classList.remove('active', 'exiting'));
   prev.classList.add('exiting');
-  setTimeout(() => { prev.classList.remove('active', 'exiting'); }, 440);
+  next.classList.add('active');
   cur = n;
-  slides[cur].classList.add('active');
+  exitTimer = setTimeout(() => { prev.classList.remove('exiting'); exitTimer = null; }, 460);
   dotsEl.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
   counter.textContent = `${cur + 1} / ${slides.length}`;
 }
